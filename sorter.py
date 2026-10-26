@@ -1,5 +1,3 @@
-"""Сортировщик файлов"""
-
 import json
 import os
 import shutil
@@ -8,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 
-# Категория -> набор расширений
+
 CATEGORIES = {
     "Изображения": {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".heic", ".tiff"},
     "Документы": {".pdf", ".doc", ".docx", ".txt", ".rtf", ".odt", ".xls", ".xlsx", ".csv", ".ppt", ".pptx", ".md"},
@@ -25,10 +23,10 @@ MONTHS = [
     "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",
 ]
 
-# Скрытый файл, куда записывается, что куда переместили (нужен для отмены)
+
 LOG_NAME = ".sorter_log.json"
 
-# Имена файлов для тестовой папки
+
 TEST_FILES = [
     "photo.jpg", "photo.JPG", "screenshot.png", "logo.svg",
     "report.pdf", "notes.txt", "budget.xlsx", "presentation.pptx",
@@ -50,7 +48,7 @@ MENU = """
 """
 
 
-# ---------- Вспомогательные функции ----------
+
 
 def create_test_folder() -> Path:
     """Создаёт папку ~/test с 20 пустыми файлами. У файлов разные даты изменения."""
@@ -103,7 +101,7 @@ def remove_empty_dirs(folder: Path, stop: Path) -> None:
         folder = folder.parent
 
 
-# ---------- Основные действия ----------
+
 
 def sort_folder(folder: Path, by: str, dry_run: bool = False) -> None:
     """Сортирует файлы из folder. by = "type" (по типу) или "date" (по дате)."""
@@ -122,7 +120,7 @@ def sort_folder(folder: Path, by: str, dry_run: bool = False) -> None:
 
         target_dir = folder / sub
         target = unique_path(target_dir / item.name)
-        short = target.relative_to(folder)  # путь для красивого вывода
+        short = target.relative_to(folder)  
 
         if dry_run:
             print(f"[проверка] {item.name}  ->  {short}")
@@ -137,7 +135,7 @@ def sort_folder(folder: Path, by: str, dry_run: bool = False) -> None:
         return
 
     if moves:
-        # Запоминаем, что куда переместили, чтобы можно было отменить
+        
         log = {"time": datetime.now().isoformat(timespec="seconds"), "moves": moves}
         (folder / LOG_NAME).write_text(
             json.dumps(log, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -170,14 +168,14 @@ def undo_last(folder: Path) -> None:
             continue
         shutil.move(str(src), str(dst))
         print(f"{move['to']}  ->  {dst.name}")
-        remove_empty_dirs(src.parent, folder)  # убираем опустевшие папки
+        remove_empty_dirs(src.parent, folder) 
         restored += 1
 
     log_file.unlink()
     print(f"\nГотово: возвращено файлов: {restored}")
 
 
-# ---------- Меню ----------
+
 
 def ask_folder() -> Path | None:
     """Спрашивает путь к папке. Если просто нажать Enter, берётся ~/test."""
